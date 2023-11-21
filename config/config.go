@@ -1,11 +1,18 @@
 package config
 
 const (
-	DBUsername = "root"
-	DBPassword = "viet1234"
-	DBHost     = "localhost"
-	DBPort     = "3306"
-	DBName     = "yoga_support"
+	DBUsername             = "root"
+	DBPassword             = "viet1234"
+	DBHost                 = "localhost"
+	DBPort                 = "3306"
+	DBName                 = "yoga_support"
+	SubscriptionKey        = "2748de0fd11f4bb6b9e991223f0edccb"
+	SavedImagePath         = "/Users/vietpham1023/Desktop/saved_frames/images/"
+	SavedCroppedImagePath  = "/Users/vietpham1023/Desktop/saved_frames/cropped_images/"
+	ExecuteTerminalType    = "zsh"
+	ZshPath                = "/Users/vietpham1023/Desktop/zsh_yoga/cnn.zsh"
+	AzureComputerVisionURL = "https://yoga-pose-europe.cognitiveservices.azure.com/computervision/imageanalysis:analyze"
+	RequestParams          = "%s?api-version=%s&features=people"
 )
 
 func GetMySQLURL() string {

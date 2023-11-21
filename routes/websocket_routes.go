@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"yoga-pose-backend/config"
 )
 
 type BoundingBox struct {
@@ -80,25 +81,24 @@ func handleClientConnection(c *gin.Context) {
 			continue
 		}
 
-		// Handle the image data and save it as PNG
 		filePath, err := handleImage(data)
 		if err != nil {
 			log.Println("Error handling image:", err)
 		}
 
-		analysisResult, err := localization(*filePath, "2748de0fd11f4bb6b9e991223f0edccb")
+		analysisResult, err := localization(*filePath, config.SubscriptionKey)
 		if err != nil {
 			log.Println("Error analyzing image:", err)
 			return
 		}
 		bounds := analysisResult.PeopleResult.Values[0].BoundingBox
-		croppedImagePath := "F:\\saved_frames\\" + generateRandomFileName("_crop.png")
+		croppedImagePath := config.SavedCroppedImagePath + generateRandomFileName("_crop.png")
 		if err := cropAndSaveImage(*filePath, croppedImagePath, bounds); err != nil {
 			log.Println("Error cropping image:", err)
 			return
 		}
 
-		cmd := exec.Command("cmd", "/C", "G:\\smt\\run_python.bat", croppedImagePath)
+		cmd := exec.Command(config.ExecuteTerminalType, config.ZshPath, croppedImagePath)
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
 			println(err.Error())
@@ -107,7 +107,6 @@ func handleClientConnection(c *gin.Context) {
 		println(string(stdout))
 		stdoutStr := string(stdout)
 
-		// Parse the "Predicted Class," "Confidence," and "Execution time" from stdout
 		predictedClass := ""
 		confidence := 0.0
 		executionTime := ""
@@ -169,7 +168,7 @@ func handleImage(data []byte) (*string, error) {
 	height := 600
 	img = imaging.Resize(img, width, height, imaging.Lanczos)
 
-	fileName := "F:\\saved_frames\\" + generateRandomFileName(".png")
+	fileName := config.SavedImagePath + generateRandomFileName(".png")
 
 	if err := imaging.Save(img, fileName); err != nil {
 		log.Println("Error saving image:", err)
@@ -180,11 +179,10 @@ func handleImage(data []byte) (*string, error) {
 }
 
 func generateRandomFileName(extension string) string {
-	rand.Seed(time.Now().UnixNano())
+	rand.NewSource(time.Now().UnixNano())
 	randomString := fmt.Sprintf("%d", rand.Intn(10000)) // Random number
 	timestamp := time.Now().Unix()                      // Current timestamp
 
-	// Combine the random string and timestamp to create a unique name
 	fileName := fmt.Sprintf("%s_%d%s", randomString, timestamp, extension)
 
 	return fileName
@@ -207,8 +205,7 @@ func cropAndSaveImage(inputImagePath, outputImagePath string, bounds BoundingBox
 
 // localization performs image analysis using Azure Cognitive Services Computer Vision API
 func localization(imagePath, subscriptionKey string) (*ImageAnalysisResult, error) {
-	// API endpoint and version
-	apiURL := "https://yoga-pose-europe.cognitiveservices.azure.com/computervision/imageanalysis:analyze"
+	apiURL := config.AzureComputerVisionURL
 	apiVersion := "2023-02-01-preview"
 
 	imageData, err := os.ReadFile(imagePath)
@@ -216,7 +213,7 @@ func localization(imagePath, subscriptionKey string) (*ImageAnalysisResult, erro
 		return nil, fmt.Errorf("error reading the image: %v", err)
 	}
 
-	url := fmt.Sprintf("%s?api-version=%s&features=people", apiURL, apiVersion)
+	url := fmt.Sprintf(config.RequestParams, apiURL, apiVersion)
 
 	body := bytes.NewReader(imageData)
 
@@ -234,7 +231,12 @@ func localization(imagePath, subscriptionKey string) (*ImageAnalysisResult, erro
 	if err != nil {
 		return nil, fmt.Errorf("error making request: %v", err)
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Printf("err: %v\n", err)
+		}
+	}(response.Body)
 
 	// Read the response body
 	responseData, err := io.ReadAll(response.Body)

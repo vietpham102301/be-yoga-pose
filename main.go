@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"net/http"
 	"yoga-pose-backend/database"
 	"yoga-pose-backend/routes"
@@ -11,8 +13,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			fmt.Printf("err: %v\n", err)
+		}
+	}(db)
 
 	r := routes.SetupRoutes(db)
-	http.ListenAndServe(":8080", r)
+	err = http.ListenAndServe(":8080", r)
+	if err != nil {
+		return
+	}
 }
