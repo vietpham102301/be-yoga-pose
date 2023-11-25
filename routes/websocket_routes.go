@@ -61,6 +61,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func handleClientConnection(c *gin.Context) {
+	fmt.Printf("start handleClientConnection \n")
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -91,6 +92,7 @@ func handleClientConnection(c *gin.Context) {
 			log.Println("Error analyzing image:", err)
 			return
 		}
+
 		bounds := analysisResult.PeopleResult.Values[0].BoundingBox
 		croppedImagePath := config.SavedCroppedImagePath + generateRandomFileName("_crop.png")
 		if err := cropAndSaveImage(*filePath, croppedImagePath, bounds); err != nil {

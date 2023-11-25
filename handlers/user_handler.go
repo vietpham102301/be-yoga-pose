@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"time"
+	models2 "yoga-pose-backend/handlers/models"
 	"yoga-pose-backend/models"
 	"yoga-pose-backend/service"
 )
@@ -32,13 +33,11 @@ func GetUserByIDHandler(userService *service.UserService) func(*gin.Context) {
 
 func RegisterUserHandler(userService *service.UserService) func(*gin.Context) {
 	return func(c *gin.Context) {
-		// Parse the request body to get user registration data
 		var registrationRequest models.UserRegistrationRequest
 		if err := c.ShouldBindJSON(&registrationRequest); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 			return
 		}
-		// parse request body to get user registration data
 
 		//hash the password
 		hashedPassword, err := models.HashPassword(registrationRequest.Password)
@@ -47,14 +46,12 @@ func RegisterUserHandler(userService *service.UserService) func(*gin.Context) {
 			Email:        registrationRequest.Email,
 			PasswordHash: hashedPassword,
 		}
-		// Call the service to register the user
 		user, err := userService.RegisterUser(&userData)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		// If registration is successful, return a response
 		c.JSON(http.StatusCreated, user)
 	}
 }
@@ -67,7 +64,6 @@ func LoginUserHandler(userService *service.UserService) func(*gin.Context) {
 			return
 		}
 
-		// Authenticate the user using the service
 		user, err := userService.AuthenticateUser(&loginRequest)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})
@@ -80,18 +76,15 @@ func LoginUserHandler(userService *service.UserService) func(*gin.Context) {
 			return
 		}
 
-		// Issue a JWT token upon successful authentication
 		token, err := models.IssueJWTToken(*user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to issue JWT token"})
 			return
 		}
-		user.PasswordHash = ""
-		// Return the user data as JSON response
-		c.Header("X-Access-Token", token)
-		c.JSON(http.StatusOK, user)
+		res := models2.UserLoginResponse{}
 
-		// Set the JWT token in the response header
+		c.Header("X-Access-Token", token)
+		c.JSON(http.StatusOK, res.ToUserLoginResponse(user))
 
 		fmt.Println("Response Headers:", c.Writer.Header())
 	}

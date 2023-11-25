@@ -16,18 +16,31 @@ import (
 func SetupRoutes(db *sql.DB) *gin.Engine {
 	r := gin.Default()
 
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "DELETE"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"Content-Length", "X-Access-Token"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "https://github.com"
+		},
+		MaxAge: 12 * time.Hour}))
+
 	//r.Use(AuthMiddleware())
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
+	yogaService := service.NewYogaService(repository.NewYogaRepository(db))
 
 	routers := r.Group("/api/v1/users")
 	routers.GET("/:id", AuthMiddleware(), handlers.GetUserByIDHandler(userService))
 	routers.POST("/register", handlers.RegisterUserHandler(userService))
 	routers.POST("/login", handlers.LoginUserHandler(userService))
 	routers.GET("/test", handlers.TestRunningPythonCode())
-
 	routers.GET("/ws-video", handleClientConnection)
+
+	routers = r.Group("/api/v1/yoga")
+	routers.GET("/pose", handlers.GetYogaPoseByName(yogaService))
 
 	return r
 }
