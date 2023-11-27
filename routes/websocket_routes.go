@@ -61,13 +61,19 @@ var upgrader = websocket.Upgrader{
 }
 
 func handleClientConnection(c *gin.Context) {
+
 	fmt.Printf("start handleClientConnection \n")
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	defer conn.Close()
+	defer func(conn *websocket.Conn) {
+		err := conn.Close()
+		if err != nil {
+
+		}
+	}(conn)
 
 	for {
 		start := time.Now()
@@ -154,6 +160,7 @@ func handleClientConnection(c *gin.Context) {
 		elapsed := time.Since(start)
 		fmt.Printf("execute-time: %s \n", elapsed)
 	}
+	
 }
 
 func handleImage(data []byte) (*string, error) {

@@ -33,13 +33,12 @@ func GetUserByIDHandler(userService *service.UserService) func(*gin.Context) {
 
 func RegisterUserHandler(userService *service.UserService) func(*gin.Context) {
 	return func(c *gin.Context) {
-		var registrationRequest models.UserRegistrationRequest
+		var registrationRequest models2.UserRegistrationRequest
 		if err := c.ShouldBindJSON(&registrationRequest); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 			return
 		}
 
-		//hash the password
 		hashedPassword, err := models.HashPassword(registrationRequest.Password)
 		userData := models.User{
 			Username:     registrationRequest.Username,
@@ -58,7 +57,7 @@ func RegisterUserHandler(userService *service.UserService) func(*gin.Context) {
 
 func LoginUserHandler(userService *service.UserService) func(*gin.Context) {
 	return func(c *gin.Context) {
-		var loginRequest models.UserLoginRequest
+		var loginRequest models2.UserLoginRequest
 		if err := c.ShouldBindJSON(&loginRequest); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 			return

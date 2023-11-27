@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	models2 "yoga-pose-backend/handlers/models"
 	"yoga-pose-backend/models"
 )
 
@@ -34,7 +35,7 @@ func (ur *UserRepository) RegisterUser(user *models.User) (*models.User, error) 
 	return user, nil
 }
 
-func (ur *UserRepository) AuthenticateUser(user *models.UserLoginRequest) (*models.User, error) {
+func (ur *UserRepository) AuthenticateUser(user *models2.UserLoginRequest) (*models.User, error) {
 	// Query the database to get the user by username
 	query := "SELECT * FROM users WHERE username = ?"
 	userData := &models.User{}

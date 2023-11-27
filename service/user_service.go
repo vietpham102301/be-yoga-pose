@@ -1,6 +1,7 @@
 package service
 
 import (
+	models2 "yoga-pose-backend/handlers/models"
 	"yoga-pose-backend/models"
 	"yoga-pose-backend/repository"
 )
@@ -21,6 +22,6 @@ func (us *UserService) RegisterUser(user *models.User) (*models.User, error) {
 	return us.userRepo.RegisterUser(user)
 }
 
-func (us *UserService) AuthenticateUser(user *models.UserLoginRequest) (*models.User, error) {
+func (us *UserService) AuthenticateUser(user *models2.UserLoginRequest) (*models.User, error) {
 	return us.userRepo.AuthenticateUser(user)
 }

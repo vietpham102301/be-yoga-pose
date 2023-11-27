@@ -31,6 +31,8 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
 	yogaService := service.NewYogaService(repository.NewYogaRepository(db))
+	historyService := service.NewHistoryService(repository.NewHistoryRepository(db))
+	savePoseService := service.NewSavePoseService(repository.NewSavePoseRepository(db))
 
 	routers := r.Group("/api/v1/users")
 	routers.GET("/:id", AuthMiddleware(), handlers.GetUserByIDHandler(userService))
@@ -41,6 +43,14 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 
 	routers = r.Group("/api/v1/yoga")
 	routers.GET("/pose", handlers.GetYogaPoseByName(yogaService))
+
+	routers = r.Group("/api/v1/history")
+	routers.GET("/pose", handlers.GetHistoryHandler(historyService))
+	routers.POST("/pose", handlers.SaveHistoryHandler(historyService))
+
+	routers = r.Group("/api/v1/save-pose")
+	routers.POST("/pose", handlers.SavePoseHandler(savePoseService))
+	routers.GET("/pose", handlers.GetSavedPosesHandler(savePoseService))
 
 	return r
 }
