@@ -5,5 +5,7 @@ type History struct {
 	UserID    int64  `json:"user_id"`
 	Name      string `json:"name"`
 	Path      string `json:"path" `
+	Score     int    `json:"score"`
 	CreatedAt string `json:"created_at"`
+	IsSaved   bool   `json:"is_saved"`
 }

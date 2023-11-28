@@ -32,7 +32,6 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 	userService := service.NewUserService(userRepo)
 	yogaService := service.NewYogaService(repository.NewYogaRepository(db))
 	historyService := service.NewHistoryService(repository.NewHistoryRepository(db))
-	savePoseService := service.NewSavePoseService(repository.NewSavePoseRepository(db))
 
 	routers := r.Group("/api/v1/users")
 	routers.GET("/:id", AuthMiddleware(), handlers.GetUserByIDHandler(userService))
@@ -45,12 +44,11 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 	routers.GET("/pose", handlers.GetYogaPoseByName(yogaService))
 
 	routers = r.Group("/api/v1/history")
-	routers.GET("/pose", handlers.GetHistoryHandler(historyService))
-	routers.POST("/pose", handlers.SaveHistoryHandler(historyService))
-
-	routers = r.Group("/api/v1/save-pose")
-	routers.POST("/pose", handlers.SavePoseHandler(savePoseService))
-	routers.GET("/pose", handlers.GetSavedPosesHandler(savePoseService))
+	routers.GET("/pose", AuthMiddleware(), handlers.GetHistoryHandler(historyService))
+	routers.POST("/pose", AuthMiddleware(), handlers.SaveHistoryHandler(historyService))
+	routers.GET("/pose/:id", handlers.GetHistoryImageHandler(historyService))
+	routers.DELETE("/pose/:id", AuthMiddleware(), handlers.DeleteHistoryHandler(historyService))
+	routers.PUT("/pose/:id", AuthMiddleware(), handlers.SavedHistoryHandler(historyService))
 
 	return r
 }
@@ -86,6 +84,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			}
 
 			c.Set("user", claims)
+			c.Set("userID", claims["user_id"])
 			c.Next()
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})

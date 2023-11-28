@@ -13,6 +13,7 @@ const (
 	ZshPath                = "/Users/vietpham1023/Desktop/zsh_yoga/cnn.zsh"
 	AzureComputerVisionURL = "https://yoga-pose-europe.cognitiveservices.azure.com/computervision/imageanalysis:analyze"
 	RequestParams          = "%s?api-version=%s&features=people"
+	HostURL                = "http://localhost:8080"
 )
 
 func GetMySQLURL() string {

@@ -50,6 +50,7 @@ type PredictedResponse struct {
 	PredictedClass string  `json:"predicted_class"`
 	Confidence     float64 `json:"confidence"`
 	ExecutionTime  string  `json:"execution_time"`
+	ImagePath      string  `json:"image_path"`
 }
 
 var upgrader = websocket.Upgrader{
@@ -136,6 +137,7 @@ func handleClientConnection(c *gin.Context) {
 			PredictedClass: predictedClass,
 			Confidence:     confidence,
 			ExecutionTime:  executionTime,
+			ImagePath:      croppedImagePath,
 		}
 
 		responseJSON, err := json.Marshal(response)
@@ -160,7 +162,7 @@ func handleClientConnection(c *gin.Context) {
 		elapsed := time.Since(start)
 		fmt.Printf("execute-time: %s \n", elapsed)
 	}
-	
+
 }
 
 func handleImage(data []byte) (*string, error) {

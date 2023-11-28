@@ -29,7 +29,7 @@ func GetYogaPoseByName(yogaService *service.YogaService) func(*gin.Context) {
 			return
 		}
 
-		c.Header("Content-Type", "image/jpeg")
+		c.Header("Content-Type", "image/png")
 
 		c.Header("Content-Disposition", "attachment; filename="+yogaPoseName+".png")
 
