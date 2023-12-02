@@ -27,7 +27,6 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 		},
 		MaxAge: 12 * time.Hour}))
 
-	//r.Use(AuthMiddleware())
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
 	yogaService := service.NewYogaService(repository.NewYogaRepository(db))
@@ -37,6 +36,8 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 	routers.GET("/:id", AuthMiddleware(), handlers.GetUserByIDHandler(userService))
 	routers.POST("/register", handlers.RegisterUserHandler(userService))
 	routers.POST("/login", handlers.LoginUserHandler(userService))
+	routers.POST("/reset-password", handlers.ResetPasswordHandler(userService))
+	routers.PUT("/update-password/:id", AuthMiddleware(), handlers.UpdatePasswordHandler(userService))
 	routers.GET("/test", handlers.TestRunningPythonCode())
 	routers.GET("/ws-video", handleClientConnection)
 

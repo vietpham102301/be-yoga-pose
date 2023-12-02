@@ -146,7 +146,6 @@ func handleClientConnection(c *gin.Context) {
 			return
 		}
 
-		// Send the JSON response back to the client
 		if err := conn.WriteMessage(messageType, responseJSON); err != nil {
 			log.Println(err)
 			return
@@ -155,10 +154,6 @@ func handleClientConnection(c *gin.Context) {
 		if err := os.Remove(*filePath); err != nil {
 			log.Println("Error deleting image:", err)
 		}
-		// Delete the cropped image
-		//if err := os.Remove(croppedImagePath); err != nil {
-		//	log.Println("Error deleting cropped image:", err)
-		//}
 		elapsed := time.Since(start)
 		fmt.Printf("execute-time: %s \n", elapsed)
 	}
@@ -168,7 +163,6 @@ func handleClientConnection(c *gin.Context) {
 func handleImage(data []byte) (*string, error) {
 	reader := bytes.NewReader(data)
 
-	// Decode the image using the imaging library
 	img, err := imaging.Decode(reader)
 	if err != nil {
 		log.Println("Error decoding image:", err)
@@ -249,7 +243,6 @@ func localization(imagePath, subscriptionKey string) (*ImageAnalysisResult, erro
 		}
 	}(response.Body)
 
-	// Read the response body
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error reading response: %v", err)

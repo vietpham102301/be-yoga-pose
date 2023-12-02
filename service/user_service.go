@@ -25,3 +25,11 @@ func (us *UserService) RegisterUser(user *models.User) (*models.User, error) {
 func (us *UserService) AuthenticateUser(user *models2.UserLoginRequest) (*models.User, error) {
 	return us.userRepo.AuthenticateUser(user)
 }
+
+func (us *UserService) ResetPassword(emailOrUsername string, passwordHashed string) (*models.User, error) {
+	return us.userRepo.ResetPassword(emailOrUsername, passwordHashed)
+}
+
+func (us *UserService) UpdatePassword(userID int, newPasswordHashed string, oldPassword string) error {
+	return us.userRepo.UpdatePassword(userID, newPasswordHashed, oldPassword)
+}

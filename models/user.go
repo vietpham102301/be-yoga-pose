@@ -31,7 +31,7 @@ func VerifyPassword(hashedPassword, password string) error {
 
 // IssueJWTToken Function to issue a JWT token
 func IssueJWTToken(user User) (string, error) {
-	expirationTime := time.Now().Add(1 * time.Hour)
+	expirationTime := time.Now().Add(10 * time.Hour)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":  user.ID,
 		"username": user.Username,

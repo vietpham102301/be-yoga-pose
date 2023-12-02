@@ -9,10 +9,6 @@ type SavePoseService struct {
 	savePoseRepo *repository.SavePoseRepository
 }
 
-func NewSavePoseService(savePoseRepo *repository.SavePoseRepository) *SavePoseService {
-	return &SavePoseService{savePoseRepo}
-}
-
 func (ss *SavePoseService) SavePose(userID int, name string, path string) error {
 	return ss.savePoseRepo.SavePose(userID, name, path)
 }
