@@ -3,11 +3,14 @@ package database
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"time"
 	"yoga-pose-backend/config"
 )
 
 func InitDB() (*sql.DB, error) {
-	db, err := sql.Open("mysql", config.GetMySQLURL())
+	time.Sleep(10 * time.Second)
+
+	db, err := sql.Open("mysql", config.DataSourceName)
 	if err != nil {
 		return nil, err
 	}

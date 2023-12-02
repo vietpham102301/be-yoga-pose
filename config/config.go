@@ -14,6 +14,7 @@ const (
 	AzureComputerVisionURL = "https://yoga-pose-europe.cognitiveservices.azure.com/computervision/imageanalysis:analyze"
 	RequestParams          = "%s?api-version=%s&features=people"
 	HostURL                = "http://localhost:8080"
+	DataSourceName         = "root:viet1234@tcp(mysql:3306)/yoga_support?charset=utf8mb4&parseTime=True&loc=Local"
 )
 
 func GetMySQLURL() string {

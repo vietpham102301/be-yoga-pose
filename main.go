@@ -19,7 +19,7 @@ func main() {
 			fmt.Printf("err: %v\n", err)
 		}
 	}(db)
-
+	
 	r := routes.SetupRoutes(db)
 	err = http.ListenAndServe(":8080", r)
 	if err != nil {
