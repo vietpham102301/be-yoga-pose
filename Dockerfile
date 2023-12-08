@@ -1,37 +1,44 @@
-# Stage 1: MySQL setup
-FROM mysql:latest
+# Use the official Golang image as the base image for the Go part
+FROM golang:1.21.4 as go_builder
 
-ENV MYSQL_ROOT_PASSWORD=viet1234
-ENV MYSQL_DATABASE=yoga_support
-ENV MYSQL_USER=vietpham102301
-ENV MYSQL_PASSWORD=viet1234
-
+# Set the working directory for Go
 WORKDIR /app
 
-COPY ./init.sql /docker-entrypoint-initdb.d/init.sql
-
-# Stage 2: Build Go application
-FROM golang:latest AS build
-LABEL authors="vietpham1023"
-
-WORKDIR /app
-
+# Copy Go application files
 COPY go.mod go.sum ./
+
+# Download Go module dependencies
 RUN go mod download
 
+# Copy the rest of the application
 COPY . .
-RUN go build -o main
 
-# Stage 3: Build the final image with MySQL and the Go application binary
-FROM mysql:latest
+# Build the Go application for AMD64
+RUN CGO_ENABLED=0 GOARCH=amd64 go build -o main .
 
-ENV MYSQL_ROOT_PASSWORD=viet1234
-ENV MYSQL_DATABASE=yoga_support
-ENV MYSQL_USER=vietpham102301
-ENV MYSQL_PASSWORD=viet1234
+# Use the official Python image as the base image for the Python part
+FROM python:3.11.5-slim as python_builder
 
+# Set the working directory for Python
 WORKDIR /app
 
-COPY --from=build /app/main .
+# Copy Python application files
+COPY python_dependencies.txt .
+RUN pip install -r python_dependencies.txt
 
+# Copy the Go binary from the first stage
+COPY --from=go_builder /app/main .
+
+# Set the working directory for the combined image
+WORKDIR /app
+
+# Copy image files
+COPY saved_frames/images/ saved_frames/images/
+COPY saved_frames/cropped_images/ saved_frames/cropped_images/
+COPY python python
+
+# Expose port for the Go application
+EXPOSE 8080
+
+# Run the Go application
 CMD ["./main"]

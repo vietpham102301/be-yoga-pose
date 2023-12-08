@@ -10,7 +10,7 @@ fi
 image_file="$1"
 
 # Specify the path to your Python script
-python_script="/Users/vietpham1023/Desktop/python-resource-yoga-pose/production_run.py"
+python_script="python/production_run.py"
 
 # Check if the Python script exists
 if [ ! -f "$python_script" ]; then

@@ -8,7 +8,7 @@ import (
 )
 
 func InitDB() (*sql.DB, error) {
-	time.Sleep(10 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	db, err := sql.Open("mysql", config.DataSourceName)
 	if err != nil {

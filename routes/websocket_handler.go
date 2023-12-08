@@ -107,9 +107,11 @@ func handleClientConnection(c *gin.Context) {
 			return
 		}
 
-		cmd := exec.Command(config.ExecuteTerminalType, config.ZshPath, croppedImagePath)
+		cmd := exec.Command(config.ExecuteTerminalType, config.ZshPath, "--image", croppedImagePath)
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
+			println("goes here")
+			println(string(stdout))
 			println(err.Error())
 			return
 		}

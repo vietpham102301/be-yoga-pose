@@ -6,9 +6,10 @@ from torchvision import transforms
 import torch.nn as nn
 from torchvision.datasets import ImageFolder
 from torch import device
+from torch import save
 
-dataset_path = r'/Users/vietpham1023/Desktop/filtered_dataset'
-model_path = r'/Users/vietpham1023/Desktop/python-resource-yoga-pose/model4_30_classes_01.pth'
+dataset_path = r'/app/python/filtered_dataset'
+model_path = r'/app/python/model.pth'
 
 
 class ConvNet(nn.Module):
@@ -69,11 +70,14 @@ def main(input_image_path):
     dataset = ImageFolder(root=dataset_path, transform=data_transforms)
     num_classes = len(dataset.classes)
     print(num_classes)
-    mps_device = device("mps:0")
-    model = ConvNet(num_classes)
-    model.to(mps_device)
+    # mps_device = device("mps:0")
+    # model = ConvNet(num_classes)
+    # model.to(mps_device)
 
-    model.load_state_dict(load(model_path))
+    model = ConvNet(num_classes)
+    model.load_state_dict(load(model_path, map_location=device('cpu')))
+    # save(model.state_dict(), 'new_model.pth')
+    # model.load_state_dict(load(model_path))
     model.eval()
 
     image = Image.open(input_image_path)
@@ -82,7 +86,7 @@ def main(input_image_path):
     image = data_transforms(image).unsqueeze(0)
 
     with no_grad():
-        image = image.to(mps_device)
+        # image = image.to(mps_device)
         outputs = model(image)
         probabilities = softmax(outputs, dim=1)
         _, predicted = max(outputs, 1)
