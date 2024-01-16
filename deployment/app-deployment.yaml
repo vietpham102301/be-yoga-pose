@@ -25,7 +25,7 @@ spec:
         io.kompose.service: app
     spec:
       containers:
-        - image: gcr.io/yoga-pose-406917/be-yoga-pose:v14
+        - image: gcr.io/yoga-pose-406917/be-yoga-pose:v15
           name: app
           ports:
             - containerPort: 8080
